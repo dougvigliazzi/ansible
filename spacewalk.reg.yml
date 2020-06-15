@@ -1,0 +1,56 @@
+---
+#- name: SPACEWALK REGISTER
+#  become: yes
+#  become_method: su
+
+- hosts: all
+  tasks:
+    - name: Classify hosts depending on their OS distribution.
+      group_by:
+        key: os_{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}
+
+    - name: print OS name.
+      debug:
+        msg: "{{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }} - {{ ansible_facts.distribution_file_variety }}"
+
+# now just on the CentOS hosts...
+
+- hosts: os_CentOS_7.7
+  gather_facts: false
+  become: yes
+  become_method: su
+  tasks:
+    - name: Verify if subscription packages rhncfg, rhncfg-actions, rhncfg-client are present.
+      yum:
+        name:
+          - rhncfg
+          - rhncfg-actions
+          - rhncfg-client
+        state: present
+
+    - name: Register with activationkey and set a profilename which may differ from the hostname.
+      rhn_register:
+        state: present
+        activationkey: 1-e9f9ba9b1e831d07d5dd2339074589a5
+        server_url: http://172.16.103.22/XMLRPC
+
+
+- hosts: os_CentOS_7.6
+  gather_facts: false
+  become: yes
+  become_method: su
+  tasks:
+    - name: Verify if subscription packages rhncfg, rhncfg-actions, rhncfg-client are present.
+      yum:
+        name:
+          - rhncfg
+          - rhncfg-actions
+          - rhncfg-client
+        state: present
+
+    - name: Register with activationkey and set a profilename which may differ from the hostname.
+      rhn_register:
+        state: present
+        activationkey: 1-e9f9ba9b1e831d07d5dd2339074589a5
+        server_url: http://172.16.103.22/XMLRPC
+

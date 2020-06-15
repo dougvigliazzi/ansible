@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  become_method: su
+
+  tasks:
+    - name: REPLACE ROOT ENTRY
+      replace:
+        path: /etc/aliases
+        regexp: '^(.*)root:(.*)$'
+        replace: 'root: sas-lnx@telenor.bg'
+
+    - name: RENEW ALIASES
+      shell: newaliases

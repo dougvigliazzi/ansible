@@ -1,0 +1,10 @@
+---
+- name: Check if service is enabled and started
+  hosts: Host*
+  become: yes
+  tasks:
+  - name: Check service is enabled and started
+    service:
+      name: "{{ service }}"
+      enabled: true
+      state: started

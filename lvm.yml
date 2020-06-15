@@ -1,0 +1,17 @@
+---
+- name: LVM Info
+  hosts: all
+  become: yes
+  become_method: su
+
+  tasks:
+    - name: LVM
+      debug:
+        msg: "{{ ansible_facts.lvm.lvs }}"
+#        msg: "{{ item }}"
+#      with_items: "{{ ansible_facts.lvm.lvs }}"
+
+    - name: LVM VGS
+      debug:
+        msg: "{{ ansible_facts.lvm.vgs }}"
+

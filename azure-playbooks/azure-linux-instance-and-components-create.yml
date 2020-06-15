@@ -1,0 +1,42 @@
+---
+- name: Create Azure Linux Instance and all needed components
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  vars:
+    resource_group: jacek-demo
+    azure_vm_name: demovm003
+ 
+  tasks:
+  - name: create Azure resource group
+    azure_rm_resourcegroup:
+      name: "{{ resource_group }}"
+      location: westeurope
+      state: present
+
+  - name: Create virtual network
+    azure_rm_virtualnetwork:
+      resource_group: "{{ resource_group }}"
+      name: demovirtnet001
+      address_prefixes: "10.10.0.0/16"
+
+  - name: Add subnet
+    azure_rm_subnet:
+      resource_group: "{{ resource_group }}"
+      name: demosubnet001
+      address_prefix: "10.10.0.0/24"
+      virtual_network: demovirtnet001
+
+  - name: Create virtual machine
+    azure_rm_virtualmachine:
+      resource_group: "{{ resource_group }}"
+      name: "{{ azure_vm_name }}"
+      vm_size: Standard_D2s_v3
+      admin_username: jacek
+      admin_password: redhat01!
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.1'
+        version: latest

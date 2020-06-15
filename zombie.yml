@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: yes
+  become_method: su
+ 
+  tasks:
+### ZOMBIE NAMES
+    - name: Get running processes
+      shell: "ps -ef | grep -Ev \"grep|bin\" | grep defunct |  awk '{print \"Process name: \" $8 \" PID: \" $2 \" state: \" $9 }'"
+      ignore_errors: yes
+      register: running_processes
+
+    - name: Possible zombie processes running
+      debug: 
+        msg: "Zombie process above "#{{ item }}"
+      ignore_errors: yes
+      with_items: "{{ running_processes.stdout_lines }}"

@@ -1,0 +1,14 @@
+---
+- name: Simple Windows Configuration
+  hosts: all
+  connection: winrm
+  
+  tasks:
+  - name: Install IIS Web-Server
+    win_feature:
+      name: Web-Server
+    register: iis_install
+
+  - name: Reboot when Web-Server feature requires it
+    win_reboot:
+    when: iis_install.reboot_required

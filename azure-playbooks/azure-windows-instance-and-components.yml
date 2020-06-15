@@ -1,0 +1,61 @@
+---
+- name: Create Azure Instance and all needed components
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  vars:
+    resource_group: jacek-demo
+    azure_vm_name: demovm003
+    winrm_enable_script: SQBuAHYAbwBrAGUALQBFAHgAcAByAGUAcwBzAGkAbwBuACAALQBDAG8AbQBtAGEAbgBkACAAKAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABTAHkAcwB0AGUAbQAuAE4AZQB0AC4AVwBlAGIAQwBsAGkAZQBuAHQAKQAuAEQAbwB3AG4AbABvAGEAZABTAHQAcgBpAG4AZwAoACcAaAB0AHQAcABzADoALwAvAHIAYQB3AC4AZwBpAHQAaAB1AGIAdQBzAGUAcgBjAG8AbgB0AGUAbgB0AC4AYwBvAG0ALwBhAG4AcwBpAGIAbABlAC8AYQBuAHMAaQBiAGwAZQAvAGQAZQB2AGUAbAAvAGUAeABhAG0AcABsAGUAcwAvAHMAYwByAGkAcAB0AHMALwBDAG8AbgBmAGkAZwB1AHIAZQBSAGUAbQBvAHQAaQBuAGcARgBvAHIAQQBuAHMAaQBiAGwAZQAuAHAAcwAxACcAKQApADsAIABFAG4AYQBiAGwAZQAtAFcAUwBNAGEAbgBDAHIAZQBkAFMAUwBQACAALQBSAG8AbABlACAAUwBlAHIAdgBlAHIAIAAtAEYAbwByAGMAZQA=
+  
+  tasks:
+  - name: create Azure resource group
+    azure_rm_resourcegroup:
+      name: "{{ resource_group }}"
+      location: westeurope
+      state: present
+
+  - name: Create virtual network
+    azure_rm_virtualnetwork:
+      resource_group: "{{ resource_group }}"
+      name: demovirtnet001
+      address_prefixes: "10.10.0.0/16"
+
+  - name: Add subnet
+    azure_rm_subnet:
+      resource_group: "{{ resource_group }}"
+      name: demosubnet001
+      address_prefix: "10.10.0.0/24"
+      virtual_network: demovirtnet001
+
+  - name: Create virtual machine
+    azure_rm_virtualmachine:
+      resource_group: "{{ resource_group }}"
+      name: "{{ azure_vm_name }}"
+      vm_size: Standard_D2s_v3
+      admin_username: jacek
+      admin_password: redhat01!
+      os_type: Windows
+      image:
+        offer: WindowsServer
+        publisher: MicrosoftWindowsServer
+        sku: 2016-Datacenter
+        version: latest
+        
+  - name: create Azure vm extension to enable HTTPS WinRM listener
+    azure_rm_virtualmachine_extension:
+      name: winrm-extension
+      resource_group: "{{ resource_group }}"
+      virtual_machine_name: "{{ azure_vm_name }}"
+      publisher: Microsoft.Compute
+      virtual_machine_extension_type: CustomScriptExtension
+      type_handler_version: 1.9
+      settings: '{"commandToExecute": "powershell.exe -ExecutionPolicy ByPass -EncodedCommand {{winrm_enable_script}}"}'
+      auto_upgrade_minor_version: true
+
+  - name: wait for the WinRM port to come online
+    wait_for:
+      port: 5986
+      host: '{{azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress}}'
+      timeout: 600

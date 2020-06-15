@@ -1,0 +1,50 @@
+---
+### NTP UPDATE
+
+ - hosts: webservers
+   become: yes
+   become_method: su
+   tasks:
+   - name: allow ntp through firewall
+     shell: firewall-cmd --add-service=ntp --permanent
+
+   - name: firewall reload
+     shell: firewall-cmd --reload
+
+   - name: Make sure Chrony is started up
+     service: name=chronyd state=started enabled=yes
+     tags: chrony
+ 
+   - name: set timezone
+     timezone: 
+       name: Europe/Sofia
+
+   - name: Install NTP
+     yum: name=ntp state=installed 
+     tags: ntp
+ 
+#   - name: Copy over the NTP configuration
+#     template: src=./templates/ntp.conf dest=/etc/ntp.conf
+#     notify:
+#     - restart ntpd
+#     tags: ntp
+ 
+   - name: Make sure NTP is stopped
+     service: name=ntpd state=stopped enabled=yes
+     tags: ntp
+ 
+   - name: Sync time initialy
+     shell: ntpdate 172.18.4.35
+     tags: ntp
+
+   - name: Make sure NTP is started up
+     service: name=ntpd state=running enabled=yes
+     tags: ntp
+
+   - name: Sync hwclock
+     shell: hwclock -w
+     tags: ntp
+
+   handlers:
+   - name: restart ntpd
+     service: name=ntpd state=restarted

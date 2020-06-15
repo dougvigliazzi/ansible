@@ -1,0 +1,5 @@
+---
+- hosts: webservers
+  max_fail_percentage: 30
+  serial: 30
+  

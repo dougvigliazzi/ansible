@@ -1,0 +1,19 @@
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+#    - name: Shell command
+#      shell: cat /etc/redhat-release #| grep -i "name|version"
+#      register: sh
+
+#    - name: Shell output
+#      debug: var=sh.stdout_lines
+
+
+    - name: Raw output
+      raw: cat /etc/redhat-release #| egrep -i "name|version"
+      register: raw
+
+    - name: Raw output
+      debug: var=raw.stdout_lines
+

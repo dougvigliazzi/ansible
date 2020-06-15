@@ -1,0 +1,24 @@
+---
+
+
+- name: Disk information
+  hosts: all
+  become: yes
+  become_method: su
+  tasks:
+
+    # Print the Dictionary
+#    - debug:
+#        msg: "{{ansible_mounts | to_nice_yaml}}"
+
+
+    - name: Disk and partition info
+      debug:
+#        msg: "Mount Point {{item.mount}} is {{ (((item.size_available/1024)/1024)/1024) | round(2,'floor') }} GB available from {{ (item.size_total/1024/1024/1024) | round(2,'floor') }} GB used percentage is {{((item.size_total-item.size_available)/item.size_total*100) | round(1,'floor')}}% "
+        msg: " {{item.mount}}\";{{ (((item.size_total/1024)/1024)/1024) | round(2,'floor') }};{{ (((item.size_available/1024)/1024)/1024) | round(2,'floor') }};{{((item.size_total-item.size_available)/item.size_total*100) | round(1,'floor')}}%"
+      loop: "{{ansible_mounts | from_yaml_all | list}}"
+      
+#    - name: Disk and partition info in a list
+#      debug: 
+#        msg: "{{item}}"
+#      loop: "{{ansible_mounts | from_yaml_all |sort| list}}" 

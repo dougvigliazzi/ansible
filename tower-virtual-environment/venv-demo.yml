@@ -1,0 +1,30 @@
+---
+# Simple playbook to demonstrate Ansible Tower Virtual Environments
+
+- name: Tower Virtual Environment Demonstation
+  hosts: all
+
+  tasks:
+  - name: Yum download_only runs on 2.7 and above only
+    yum:
+      name: wget
+      download_only: yes
+
+  - name: Install downloaded package from local filesystem
+    yum:
+      name: /var/cache/yum/x86_64/7Server/base/packages/wget-1.14-15.el7.x86_64.rpm
+      state: present
+
+  - name: Check if package is present
+    command: rpm -qa wget
+    register: package_name
+
+  - name: Dispaly Package Name
+    debug:
+      msg: "Installed package: {{ package_name.stdout }}"
+    when: package_name is defined
+
+  - name: Show message if sth goes wrong
+    debug:
+      msg: "Ups Something Went Wrong!!!"
+    when: package_name is not defined

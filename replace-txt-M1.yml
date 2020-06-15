@@ -1,0 +1,17 @@
+---
+- hosts: webservers
+  become: yes
+  become_method: su
+
+  tasks:
+    - name: Test replace
+      lineinfile:
+        path: /tmp/test.txt
+        state: present
+        regexp: '^(.*)epmd:(.*)$'
+        insertafter: '^  stenly,dougv'
+        line: 'epmd:	stenly,dougv'
+
+    - name: Renew alliases
+      shell: newaliases
+

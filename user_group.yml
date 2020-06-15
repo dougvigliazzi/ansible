@@ -1,0 +1,40 @@
+---
+- hosts: webservers
+  become: yes
+  become_method: su
+  tasks:
+    - name: Create Groups
+      group:
+        name: "{{ item }}"
+      loop:
+        - rumi
+        - kala
+
+    - name: Create User
+      user:
+        name: "{{ item.name }}"
+        group: "{{ item.group }}"
+        groups: "{{ item.groups }}"
+        password: "{{ item.password }}"
+#        password: "{{ item.password  | password_hash('sha512') }}"
+        state: "{{ item.state }}"
+      loop:
+        - { name: 'kala', group: 'kala', groups: 'wheel', password: '$6$YfjfRDD9clJQkv2U$vt5deEycvg55QyunFbTaR6XMFKZm8Amgb1dPjLZSZjX/srrx48NkjhHL2yONBtJTF5LiaboILdNo1OR/G1xyp0', state: 'present' }
+        - { name: 'rumi', group: 'rumi', groups: 'wheel', password: '$6$YfjfRDD9clJQkv2U$vt5deEycvg55QyunFbTaR6XMFKZm8Amgb1dPjLZSZjX/srrx48NkjhHL2yONBtJTF5LiaboILdNo1OR/G1xyp0', state: 'present' }
+
+    - name: Force user password change
+      command: chage -d 0 "{{ item }}"
+      loop:
+        - rumi
+        - kala
+
+    - name: Install SSH key
+      authorized_key:
+        user: "{{ item.user }}"
+        key: "{{ item.key }}"
+        state: "{{ item.state }}"
+        comment: "{{ item.comment }}"
+      loop:
+        - { user: 'dougv', key: "{{ lookup('file', '/home/dougv/.ssh/id_dsa.pub') }}, state: 'present', comment: 'dougv key' }
+        - { user: 'kala', key: "{{ lookup('file', '/home/kala/.ssh/id_dsa.pub') }}, state: 'present', comment: 'kala key' }
+        - { user: 'rumi', key: "{{ lookup('file', '/home/rumi/.ssh/id_dsa.pub') }}, state: 'present', comment: 'rumi key' }

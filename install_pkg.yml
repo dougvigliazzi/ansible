@@ -1,0 +1,19 @@
+---
+- hosts: webservers
+  become: yes
+  become_method: su
+  tasks:
+  - name: Install packages
+    yum:
+      name: nano
+      state: installed
+      disable_gpg_check: yes
+      validate_certs: no
+      skip_broken: yes
+
+  - name: Install group of packages
+    yum:
+      name:
+        - nano
+        - python2-pip
+      state: latest

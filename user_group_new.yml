@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: yes
+  become_method: su
+  vars:
+    users:
+    - "rumi"
+    - "kalo"
+#    - "dougv"
+
+    password: "Buhal66!"
+#    groups: "wheel"
+
+  tasks:
+    - name: Create User
+      user:
+        name: "{{ item }}"
+        groups: "wheel"
+        password: "{{ password | password_hash('sha512') }}"
+      with_items: "{{ users }}"
+
+    - name: Force user password change
+      command: chage -d 0 "{{ item }}"
+      with_items: "{{ users }}"
+
+#    - name: Install SSH key
+#      authorized_key:
+#        user: "{{ item }}"
+#        key: "{{ lookup('file', 'keys/'+ item + '.key.pub') }}"
+#      with_items: "{{ users }}"
+

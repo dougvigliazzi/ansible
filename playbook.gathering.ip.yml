@@ -1,0 +1,18 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Network information
+      when: 
+        - ansible_facts['default_ipv4']['interface'] is defined
+      with_items: "{{ ansible_facts['default_ipv4']['interface'] }}"
+      debug:
+        msg: "Intefaces in {{ ansible_hostname }} is {{ item }} and default IP address is {{ ansible_facts['default_ipv4']['interface'] }}: {{ ansible_facts['default_ipv4']['address'] }} and all assigned IP's {{ ansible_facts['all_ipv4_addresses'] }} "
+
+    - name: All assigned IP addresses
+      debug:  
+        msg: " {{ ansible_facts['all_ipv4_addresses'] }}"
+
+#    - name: Facts
+#      debug: var=ansible_facts
+

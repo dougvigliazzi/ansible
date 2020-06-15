@@ -1,0 +1,8 @@
+---
+- name: Machine prepare
+  hosts: all
+
+  roles:
+    - common
+
+#    - test

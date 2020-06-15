@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+  become_method: su
+  tasks:
+    - name: Distribution
+      debug:
+        msg: "{{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}"
+
+    - name: vCPU
+      debug:
+        msg: "vCPU: {{ ansible_processor_vcpus }}"
+
+    - name: SELINUX
+      debug:
+        msg: "SELinux: {{ ansible_selinux.status }}"
+
+    - name: INTERFACES
+      debug:
+        msg: "{{ ansible_interfaces }}"
+
+    - name: DEFAULT INTERFACE, IPV4 AND INTERFACE
+      debug:
+        msg: "{{ ansible_default_ipv4.interface }} / {{ ansible_default_ipv4.address }} / {{ ansible_default_ipv4.netmask }}"
+
+    - name: DNS
+      debug:
+        msg: "{{ ansible_dns }}"

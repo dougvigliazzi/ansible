@@ -1,0 +1,27 @@
+---
+- hosts: dbservers
+  become: yes
+  become_method: su
+  
+  tasks:
+    - name: Get a cert from an https port
+      loop:
+        get_certificate:
+#        host: "nfs.bos.telenor.bg"
+#        host: "172.16.103.22"
+          host: "{{ item }}"
+          port: 443
+         loop:
+          - 172.16.103.22
+          - nfs.bos.telenor.bg
+      delegate_to: localhost
+      run_once: true
+      register: cert
+
+    - name: How many days until cert expires
+      debug:
+        msg: "Cert expires in: {{ expire_days }} days."
+      vars:
+        expire_days: "{{ (( cert.not_after | to_datetime('%Y%m%d%H%M%SZ')) - (ansible_date_time.iso8601 | to_datetime('%Y-%m-%dT%H:%M:%SZ')) ).days }}"
+
+

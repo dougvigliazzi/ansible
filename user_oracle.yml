@@ -1,0 +1,22 @@
+---
+- hosts: oracle
+  become: yes
+  become_method: su
+  gather_facts: false
+  tasks:
+    - name: Add user
+      raw: adduser -g wheel tncodba
+      register: adduser
+
+    - name: Add user output
+      debug: var=adduser.stdout_lines
+
+
+    - name: Raw output
+      raw: echo "" >> /etc/passwd
+      register: passwd
+
+    - name: Raw output
+      debug: var=passwd.stdout_lines
+
+

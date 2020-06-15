@@ -1,0 +1,10 @@
+---
+- hosts: all
+  tasks:
+    - name: OS
+      shell: cat /etc/*-release
+      register: os
+
+    - name: Escreve OS
+      debug:
+        var: os.stdout 

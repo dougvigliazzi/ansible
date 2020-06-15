@@ -1,0 +1,67 @@
+---
+- name: Restore VM from snap
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+
+  vars:
+#    username:
+#    url:
+#    password:
+    datacenter: MicroLab
+    cluster: MicroCluster
+    template: host4-template
+    vm_name: test02
+    vm_description: user20
+
+  tasks:
+#  - name: Obtain SSO token
+#    ovirt_auth:
+#      url: "{{ url }}"
+#      username: "{{ username }}"
+#      password: "{{ password }}"
+#      insecure: yes
+
+  - name: Stop VM
+    ovirt_vms:
+#      auth: "{{ ovirt_auth }}"
+      name: "{{ vm_name }}"
+      state: stopped
+      wait: yes
+
+#  - name: facts
+#    setup:
+
+  - name: Snapshot id register
+    ovirt_snapshots_facts:
+#      auth: "{{ ovitr_auth }}"
+      vm: "{{ vm_name }}"
+      description: Initial_snap
+
+  - name: snap debug
+    debug:
+      var: ovirt_snapshots
+
+  - name: snap 2 debug
+    debug:
+      var: ovirt_snapshots[0].id
+
+  - name: Restore from snap
+    ovirt_snapshots:
+#      auth: "{{ ovirt_auth }}"
+      vm_name: "{{ vm_name }}"
+      state: restore
+      snapshot_id: "{{ ovirt_snapshots[0].id }}"
+      wait: yes
+
+  - name: Start VM
+    ovirt_vms:
+#      auth: "{{ ovirt_auth }}"
+      name: "{{ vm_name }}"
+      state: running
+      wait: yes
+
+  - name: Pause after VM restore
+    pause:
+      seconds: 40

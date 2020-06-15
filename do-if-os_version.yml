@@ -1,0 +1,35 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+    - name: Classify hosts depending on their OS distribution
+      group_by:
+        key: os_{{ ansible_distribution }}_{{ ansible_facts.ansible_distribution_major_version }}
+#        key: os_{{ ansible_facts.ansible_distribution }}_{{ ansible_facts.ansible_distribution_major_version }}
+#        key: os_{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}
+
+
+    - name: print OS name
+      debug: 
+        msg: "{{ ansible_facts.ansible_distribution }} {{ ansible_facts.ansible_distribution_version }} - {{ ansible_distribution_major_version }}  - {{ ansible_facts.ansible_distribution_file_variety }}"
+
+
+# now just on the CentOS hosts...
+
+- hosts: os_CentOS_7 #.6
+  gather_facts: False
+  tasks:
+    - name: Ping CentOS 7 systems
+      ping:
+
+- hosts: os_CentOS_6
+  gather_facts: False
+  tasks:
+    - name: Ping CentOS 6 systems
+      shell: cat /etc/redhat-release
+
+- hosts: os_CentOS_5
+  gather_facts: False
+  tasks:
+    - name: Ping CentOS 5 systems
+      shell: cat /etc/redhat-release

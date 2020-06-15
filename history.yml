@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  become_method: su
+  become_user: root
+  gather_facts: false
+  tasks:
+    - name: History to output file
+      raw: cp /root/.bash_history history.out
+
+    - name: Change permissions to output file
+      raw: chmod 777 history.out
+

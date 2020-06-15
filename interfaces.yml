@@ -1,0 +1,26 @@
+---
+- hosts: all
+  become: yes
+  become_method: su
+  tasks:
+    - name: Network information
+      debug:
+        msg: "{{ ansible_interfaces }} | {{ ansible_all_ipv4_addresses }}"
+
+    - name: Interfaces 
+      debug:
+        msg: "{{ ansible_interfaces[1] }} | {{ ansible_all_ipv4_addresses[0] }}"
+
+#    - name: LOOP
+#      debug:
+#        msg: "{{ item.eth0.ipv4 }}"
+#      loop: "{{ ansible_facts }}"
+
+    - name: Interfaces2
+      debug:
+        msg: "{{ ansible_facts.eth0.ipv4 }}"
+
+    - name: LVM
+      debug:
+        msg: "{{ ansible_facts.lvm }}"
+

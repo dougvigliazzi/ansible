@@ -1,0 +1,29 @@
+---
+- hosts: all
+  tasks:
+    - name: Classify hosts depending on their OS distribution
+      group_by:
+        key: os_{{ ansible_facts['distribution'] }}
+
+    - name: print OS name
+      debug: 
+        msg: "{{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }} - {{ ansible_facts.distribution_file_variety }}"
+
+ # now just on the CentOS hosts...
+
+- hosts: os_CentOS
+  gather_facts: False
+  tasks:
+    - name: Ping CentOS systems
+      ping:
+
+    - name: SSH service status started
+      service:
+        name: sshd
+        state: started
+
+- hosts: os_RedHat
+  gather_facts: false
+  tasks:
+    - name: Ping RHEL systems
+      ping:

@@ -1,0 +1,45 @@
+---
+- hosts: webservers
+  become: yes
+  become_method: su
+
+  name: Applying basic configuration
+  
+  tasks:
+#  - name: Enabling proxy
+#    environment:
+#      http_proxy: 172.16.3.80:8282
+#      https_proxy: 172.16.3.80:8282
+
+  - name: Applying HTTP firewall configuration
+    firewalld: 
+      service: http
+      permanent: yes
+      state: enabled
+
+  - name: Applying HTTPS firewall configuration
+    firewalld:
+      service: https
+      permanent: yes
+      state: enabled
+
+  - name: Applying SSH firewall configuration
+    firewalld:
+      service: ssh
+      permanent: yes
+      state: enabled
+
+  - name: Installing EPEL repositories
+    yum:
+      name: epel-release
+      state: installed
+  
+  - name: Updating repositories
+    yum: 
+      update_only=yes
+      
+  - name: Installing Chrony
+    yum:
+      name: chrony
+      state: latest
+      

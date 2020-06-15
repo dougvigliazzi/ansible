@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: true
+  become_method: su
+  vars:
+    users:
+    - "rumi"
+    - "kala"
+
+    password: "Buhal66!"
+
+  tasks:
+
+## CentOS 7 tasks
+  - name: CentOS 7 like
+    user:
+      name: "{{ item }}"
+      groups: "wheel"
+      password: "{{ password | password_hash('sha512') }}"
+    with_items: "{{ users }}"
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
+
+
+## CentOS 6 tasks
+  - name: CentOS 6 - Create user
+    command:
+      /usr/sbin/adduser -g wheel {{ item }}
+    with_items: "{{ users }}"
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+
+  - name: CentOS 6 - Set password user
+    command:
+      /usr/sbin/usermod --password "{{ password  | password_hash('sha512') }}" "{{ item }}"
+    with_items: "{{ users }}"
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+
+  - name: CentOS 6 - Force user password change
+    command: 
+      chage -d 0 "{{ item }}"
+    with_items: "{{ users }}"
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+
+
+## CentOS 5 tasks
+  - name: CentOS 5 like
+    ping:
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '5'
+
+  - name: Red Hat like
+    ping:
+    when: ansible_distribution == 'Red Hat Enterprise Linux' and ansible_distribution_major_version == '7'
