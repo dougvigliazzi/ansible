@@ -1,0 +1,10 @@
+all:
+  hosts:
+    acer:
+    dell:
+
+#    children:
+#      servers:
+#        hosts:
+#          acer:
+#          dell:
