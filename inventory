@@ -1,2 +1,9 @@
-dell=192.168.0.118
-acer=192.168.0.120
+[frontend]
+dell    ansible_host=192.168.0.118
+
+[backend]
+acer    ansible_host=192.168.0.120
+
+[prod:children]
+backend
+frontend   
