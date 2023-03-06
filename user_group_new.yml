@@ -4,11 +4,10 @@
   become_method: su
   vars:
     users:
-    - "rumi"
-    - "kalo"
-#    - "dougv"
+    - "john"
+    - "doe"
 
-    password: "Buhal66!"
+    password: ""
 #    groups: "wheel"
 
   tasks:
