@@ -7,8 +7,8 @@
       group:
         name: "{{ item }}"
       loop:
-        - rumi
-        - kala
+        - john
+        - doe
 
     - name: Create User
       user:
