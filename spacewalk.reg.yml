@@ -31,7 +31,7 @@
     - name: Register with activationkey and set a profilename which may differ from the hostname.
       rhn_register:
         state: present
-        activationkey: 1-e9f9ba9b1e831d07d5dd2339074589a5
+        activationkey: 1-
         server_url: http://172.16.103.22/XMLRPC
 
 
@@ -51,6 +51,6 @@
     - name: Register with activationkey and set a profilename which may differ from the hostname.
       rhn_register:
         state: present
-        activationkey: 1-e9f9ba9b1e831d07d5dd2339074589a5
+        activationkey: 1-
         server_url: http://172.16.103.22/XMLRPC
 
